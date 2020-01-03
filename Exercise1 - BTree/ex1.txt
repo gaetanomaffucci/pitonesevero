@@ -1,1 +1,11 @@
-gg
+Remembering that a B-Tree is a particular (a,b) tree with a=[d/2] and b=d where a is the minimum number of children and d is the maximum one. We need to implement in order:
+
+Node class
+B-Tree Class which has 5 methods: Search, Fusion, Split, Insertion, Deletion.
+
+On the book there’s no implementation of (a,b) tree nor B-Tree and professors don’t show it in slide.
+So book can be helpful for theory and functional logic of an (a,b) but implementation must be developed.
+An useful tool to check our result is a B-TREE visualizer and can be founded at https://www.cs.usfca.edu/~galles/visualization/BTree.html
+A general idea of presentation of this exercise is to try different implementation and comment results choosing the best one.
+Exercise require to optimize computational complexity in terms of I/O so  we need a tool(python or other way ) to test it.
+Remember that python provides internal tool to execute different kind of tests.

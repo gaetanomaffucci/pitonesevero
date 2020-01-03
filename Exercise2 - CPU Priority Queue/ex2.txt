@@ -1,0 +1,8 @@
+Obviously is a Priority Queue. Each job is an object that has:
+    -Execution Length(in time slice): an integer between 1 and 100
+    -Priority: And integer between -20(highest) and 19(lowest)
+    -Waiting Time(in time slice): an integer to be defined
+In order to choose the best data structure for the need operation we describe a little comparison of the possible choice.
+Adaptable priority queue (with locator) is the preferred choice because time complexity.
+Also ADT adaptable priority queue has a method update( ) that allows to update the key of the elements in the priority queue.
+This is very useful for changing the value of priority jobs during the execution of the program.

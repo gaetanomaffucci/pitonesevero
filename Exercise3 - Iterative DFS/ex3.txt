@@ -1,0 +1,5 @@
+Exercise requires to implement a DFS graph visit iteratively.
+Graph node implementation given by professor must be used.
+Since we can modify node graph class it’s useful to add a visited flag state and also information about backedge.
+The algorithm ends when no longer nodes can be reached by starting point.
+Take into account that we must divide the problem for directed graphs and undirected graphs.
