@@ -1,3 +1,5 @@
+from math import ceil
+
 class BTreeNode(object):
     """A B-Tree Node.
 
@@ -10,7 +12,7 @@ class BTreeNode(object):
     def __init__(self, leaf=False):
         self.leaf = leaf
         self.keys = []
-        self.c    = []
+        self.c = []
         self.parent = None
 
 class BTree(object):
@@ -19,7 +21,7 @@ class BTree(object):
         # t is the minimum number of child that a node may have
         self.t = t
 
-    def insert(self, k):
+    """def insert(self, k):
         r = self.root
         if len(r.keys) == (2*self.t) - 1:     # keys are full, so we must split
             s = BTreeNode()
@@ -70,6 +72,46 @@ class BTree(object):
         if not y.leaf:
             z.c = y.c[t:(2*t)]
             y.c = y.c[0:(t-1)]
+    """
+    def insert_key(self, key, x):
+        x.keys.append(key)
+        x.keys.sort()
+
+    def split(self, x, key):
+        if x.parent != None:
+            self.insert(x.parent, key)
+            y = BTreeNode(leaf=True)
+            i = ceil(len(x.keys)/2) - 1
+            y.keys.append(x.keys[0:i])
+            z = BTreeNode(leaf=True)
+            z.keys.append(x.keys[(i+1):len(x.keys)])
+            x.parent.c.append(y)
+            x.parent.c.append(z)
+            x.parent.leaf = False
+        else:
+            self.insert_key(key, x)
+            y = BTreeNode(leaf=True)
+            i = ceil(len(x.keys)/2) - 1
+            y.keys.append(x.keys[0:i])
+            z = BTreeNode(leaf=True)
+            z.keys.append(x.keys[(i+1):len(x.keys)])
+            temp = x.keys[i]
+            x.keys.clear()
+            x.keys.append(temp)
+            print("Root"+str(x.keys))
+            x.c.append(y)
+            print(x.c[0].keys)
+            x.c.append(z)
+            print(x.c[1].keys)
+            x.leaf = False
+
+    def insert(self, key):
+        x = self.search(key, None)
+        # if node x isn't full
+        if len(x.keys) < (2*self.t-1):
+            self.insert_key(key, x)
+        else:
+            self.split(x, key)
 
     def search(self, k, x):
         """Search the B-Tree for the key k.
@@ -85,9 +127,10 @@ class BTree(object):
             while i < len(x.keys) and k > x.keys[i]:    # look for index of k
                 i += 1
             if i < len(x.keys) and k == x.keys[i]:      # found exact match
-                return x,i
+                return x, i
             elif x.leaf:                                # no match in keys, and is leaf ==> no match exists
-                return None
+                print("STO TORNANDO"+str(x.keys))
+                return x
             else:                                       # search children
                 x.c[i].parent = x
                 return self.search(k, x.c[i])
@@ -105,6 +148,7 @@ class BTree(object):
             pred = self.predecessor(x, i)
             #in the position "i" of element in the node "x", we take the predecessor founded
             x.keys.insert(i, pred)
+            self.delete(pred)
 
         #CASE 2: node "x" is leaf
         else:
@@ -162,3 +206,22 @@ class BTree(object):
         x.keys.append(temp)
         x.keys.remove(element)
         x.keys.sort()
+
+    def print_node(self, x, n):
+        print("Level"+str(n)+":")
+        print(x.keys)
+        if not x.leaf:
+            for i in range (0, len(x.keys)+1):
+                print(i)
+                self.print_node(x.c[i], n+1)
+
+
+
+#test
+b = BTree(3)
+
+for i in range (1,8):
+    b.insert(i)
+    #print(x.keys)
+
+#b.print_node(b.root, 0)
