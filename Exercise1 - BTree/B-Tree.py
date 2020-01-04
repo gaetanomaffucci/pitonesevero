@@ -30,8 +30,8 @@ class BTreeNode(object):
         self._keys.extend(keys)
         self._keys.sort()
 
-    def isfull(self, x):
-        if len(x._keys) > (2 * self.t - 1):
+    def isfull(self):
+        if len(self._keys) > (2 * self.t - 1):
             return True
         else:
             return False
@@ -101,66 +101,63 @@ class BTree(object):
 
 
     def split(self, x):
-        i = ceil(len(x.keys)/2) - 1
+        i = ceil(len(x._keys)/2) - 1
 
         #case root without children
         if x.parent == None and x.isleaf():
-            y = BTreeNode()
-            y.insert_keys(x.keys[0:i])
-            y.parent = x
-            z = BTreeNode()
-            z.insert_keys(x.keys[(i + 1):])
-            z.parent = x
-            temp = x.keys[i]
-            x._keys.clear()
-            x._keys.append(temp)
-            x._c.append(y)
-            x._c.append(z)
+
+
+            y = BTreeNode(self.t)
+            y.insert_key(x._keys[i])
+            y.parent = None
+            self.root = y
+
+            z = BTreeNode(self.t)
+            z.insert_keys(x._keys[(i + 1):])
+            z.parent = y
+
+            del x._keys[i:]
+
+            y._c.append(x)
+            y._c.append(z)
 
 
         #root with children
         elif x.parent==None and not x.isleaf():
 
             #z containz keys from i+1 till end
-            z = BTreeNode()
-            z.insert_keys(x._keys[(i + 1):])
-
-            z._c = x._c[(i + 1):]
+            z = BTreeNode(self.t)
+            z._keys=x._keys[(i + 1):]
+            z._c = x._c[(i+1):]
             for i in range(0, len(z._c)):
                 z._c[i].parent = z
 
 
-
             #y contains the median key and becames the new root
-            y = BTreeNode()
-            y.insert_keys(x.keys[i])
-
-            y._c.append(z)
+            y = BTreeNode(self.t)
+            y.insert_key(x._keys[i])
             z.parent = y
 
             y._c.append(x)
+            y._c.append(z)
             x.parent = y
 
             del x._keys[i:]
-            del x._c[(i + 1):]
+            del x._c[i+1:]
 
             self.root = y
 
         #Since overflow occurred in x we must split x
         else:
-
-            print("AAA" + str(x.parent._keys))
-
-
             temp=x._keys[i]
             x.parent.insert_key(temp)
 
-            z = BTreeNode()
-            z.insert_keys(x.keys[(i + 1):])
+            z = BTreeNode(self.t)
+            z.insert_keys(x._keys[(i + 1):])
             z._c=x._c[(i+1):]
             z.parent=x.parent
 
-            x.keys = x.keys[0:i]
+            x._keys = x._keys[0:i]
             x._c=x._c[0:(i+1)]
 
             (node, index) = self.search(temp, x.parent)
@@ -202,22 +199,22 @@ class BTree(object):
     def insert(self, key):
         x = self.search_node_to_insert(self.root, key)
         # if node x isn't full
-        self.insert_key(key, x)
-        if self.node_full(x):
+        x.insert_key(key)
+        if x.isfull():
             self.split(x)
 
 
 
     #return the node where the key should be inserted
     def search_node_to_insert(self, x, key):
-        if x.leaf:
+        if x.isleaf():
             return x
         else:
-            for i in range(0, len(x.keys)):
-                if key < x.keys[i]:
-                    return self.search_node_to_insert(x.c[i], key)
+            for i in range(0, len(x._keys)):
+                if key < x._keys[i]:
+                    return self.search_node_to_insert(x._c[i], key)
                     break
-            return self.search_node_to_insert(x.c[i + 1], key)
+            return self.search_node_to_insert(x._c[i + 1], key)
 
     def search(self, k, x):
         """Search the B-Tree for the key k.
@@ -234,7 +231,7 @@ class BTree(object):
                 i += 1
             if i < len(x._keys) and k == x._keys[i]:      # found exact match
                 return x, i
-            elif x.leaf:                                # no match in keys, and is leaf ==> no match exists
+            elif x.isleaf():                                # no match in keys, and is leaf ==> no match exists
                 return None
             else:                                       # search children
                 x._c[i].parent = x
@@ -314,18 +311,19 @@ class BTree(object):
 
     def print_node(self, x):
         #print("Level"+str(n)+":")
-        print(x.keys)
-        if not x.leaf:
-            for i in range (0, len(x.keys) + 1):
-                self.print_node(x.c[i])
+        print(x._keys)
+        if not x.isleaf():
+            for i in range (0, len(x._keys) + 1):
+                self.print_node(x._c[i])
 
 
 
 #test
 b = BTree(2)
 
-for i in range (1,13):
+for i in range(1,12):
     b.insert(i)
+    #b.print_node(b.root)
 
 
 b.print_node(b.root)
