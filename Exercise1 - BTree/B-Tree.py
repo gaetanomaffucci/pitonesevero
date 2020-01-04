@@ -6,25 +6,42 @@ class BTreeNode(object):
     attributes
     =====================
     leaf : boolean, determines whether this node is a leaf
-    keys : list, a list of keys internal to this node
-    c : list, a list of children of this node
+    _keys : list, a list of keys internal to this node
+    _c : list, a list of children of this node
     """
-    def __init__(self, leaf=False):
-        self.leaf = leaf             #boolean is leaf
-        self.keys = []                  #keys are keys[m-1]
-        self.c = []                     #c
+    def __init__(self, t):
+        self.t = t                       #order of node
+        self._keys = []                  #keys are keys[m-1]
+        self._c = []                     #c
         self.parent = None
     #TODO change behavior of leaf
 
     def isleaf(self):
-        if len(self.c)==0:
+        if len(self._c) == 0:
             return True
-        else :
+        else:
             return False
+
+    def insert_key(self, key):
+        self._keys.append(key)
+        self._keys.sort()
+
+    def insert_keys(self, keys):
+        self._keys.extend(keys)
+        self._keys.sort()
+
+    def isfull(self, x):
+        if len(x._keys) > (2 * self.t - 1):
+            return True
+        else:
+            return False
+
+
+
 
 class BTree(object):
     def __init__(self, t):
-        self.root = BTreeNode(leaf=True)
+        self.root = BTreeNode(t)
         # t is the minimum number of child that a node may have
         self.t = t
 
@@ -81,65 +98,76 @@ class BTree(object):
             y.c = y.c[0:(t-1)]
     """
 
-    def insert_key(self, key, x):
-        x.keys.append(key)
-        x.keys.sort()
 
-    def node_full(self, x):
-        if len(x.keys) > (2*self.t - 1):
-            return True
-        else:
-            return False
 
     def split(self, x):
         i = ceil(len(x.keys)/2) - 1
 
         #case root without children
-        if x.parent == None and len(x.c)==0:
-            y = BTreeNode(leaf=True)
-            y.keys = x.keys[0:i]
+        if x.parent == None and x.isleaf():
+            y = BTreeNode()
+            y.insert_keys(x.keys[0:i])
             y.parent = x
-            z = BTreeNode(leaf=True)
-            z.keys = x.keys[(i+1):len(x.keys)]
+            z = BTreeNode()
+            z.insert_keys(x.keys[(i + 1):])
             z.parent = x
             temp = x.keys[i]
-            x.keys.clear()
-            x.keys.append(temp)
-            x.c.append(y)
-            x.c.append(z)
-            x.leaf = False
+            x._keys.clear()
+            x._keys.append(temp)
+            x._c.append(y)
+            x._c.append(z)
+
 
         #root with children
-        elif x.parent==None and len(x.c) > 0:
-            y = BTreeNode()
-            y.keys = x.keys[0:i]
-            z = BTreeNode()
-            z.keys = x.keys[(i+1):len(x.keys)]
-            temp = x.keys[i]
-            y.c = x.c[0:(i+1)]
-            #for i in range (0,len(y.c)):
+        elif x.parent==None and not x.isleaf():
 
-            z.c = x.c[(i+1):len(x.keys)+1]
-            x.keys.clear()
-            x.keys.append(temp)
-            y.parent = x
-            z.parent = x
-            x.c.clear()
-            x.c.append(y)
-            x.c.append(z)
-            x.leaf = False
+            #z containz keys from i+1 till end
+            z = BTreeNode()
+            z.insert_keys(x._keys[(i + 1):])
+
+            z._c = x._c[(i + 1):]
+            for i in range(0, len(z._c)):
+                z._c[i].parent = z
+
+
+
+            #y contains the median key and becames the new root
+            y = BTreeNode()
+            y.insert_keys(x.keys[i])
+
+            y._c.append(z)
+            z.parent = y
+
+            y._c.append(x)
+            x.parent = y
+
+            del x._keys[i:]
+            del x._c[(i + 1):]
+
+            self.root = y
 
         #Since overflow occurred in x we must split x
         else:
 
-            print("AAA"+str(x.parent.keys))
-            z = BTreeNode(leaf=True)
-            self.insert_key(x.keys[i], x.parent)
-            z.keys = x.keys[(i+1):len(x.keys)]
+            print("AAA" + str(x.parent._keys))
+
+
+            temp=x._keys[i]
+            x.parent.insert_key(temp)
+
+            z = BTreeNode()
+            z.insert_keys(x.keys[(i + 1):])
+            z._c=x._c[(i+1):]
+            z.parent=x.parent
+
             x.keys = x.keys[0:i]
-            x.parent.c.append(z)
-            z.parent = x.parent
-            if self.node_full(x.parent):
+            x._c=x._c[0:(i+1)]
+
+            (node, index) = self.search(temp, x.parent)
+
+            x.parent._c.insert(i+1, z)
+
+            if x.parent.isfull():
                 self.split(x.parent)
 
         """if x.parent != None:
@@ -172,7 +200,7 @@ class BTree(object):
 
 
     def insert(self, key):
-        x = self.insert_node(self.root, key)
+        x = self.search_node_to_insert(self.root, key)
         # if node x isn't full
         self.insert_key(key, x)
         if self.node_full(x):
@@ -181,15 +209,15 @@ class BTree(object):
 
 
     #return the node where the key should be inserted
-    def insert_node(self, x, key):
+    def search_node_to_insert(self, x, key):
         if x.leaf:
             return x
         else:
             for i in range(0, len(x.keys)):
                 if key < x.keys[i]:
-                    return self.insert_node(x.c[i], key)
+                    return self.search_node_to_insert(x.c[i], key)
                     break
-            return self.insert_node(x.c[i+1], key)
+            return self.search_node_to_insert(x.c[i + 1], key)
 
     def search(self, k, x):
         """Search the B-Tree for the key k.
@@ -202,15 +230,15 @@ class BTree(object):
         """
         if isinstance(x, BTreeNode):
             i = 0
-            while i < len(x.keys) and k > x.keys[i]:    # look for index of k
+            while i < len(x._keys) and k > x._keys[i]:    # look for index of k
                 i += 1
-            if i < len(x.keys) and k == x.keys[i]:      # found exact match
+            if i < len(x._keys) and k == x._keys[i]:      # found exact match
                 return x, i
             elif x.leaf:                                # no match in keys, and is leaf ==> no match exists
                 return None
             else:                                       # search children
-                x.c[i].parent = x
-                return self.search(k, x.c[i])
+                x._c[i].parent = x
+                return self.search(k, x._c[i])
         else:                                           # no node provided, search root of tree
             return self.search(k, self.root)
 
