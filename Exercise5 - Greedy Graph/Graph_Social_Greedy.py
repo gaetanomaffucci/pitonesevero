@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from DataStructure.priority_queue.adaptable_heap_priority_queue import *
+import random
 
 class Graph:
   """Representation of a simple graph using an adjacency map."""
@@ -27,7 +27,7 @@ class Graph:
   #------------------------- nested Vertex class -------------------------
   class Vertex:
     """Lightweight vertex structure for a graph."""
-    __slots__ = '_element', '_visited', '_color', '_signed'
+    __slots__ = '_element', '_visited', '_prec'
 
     def __init__(self, x):
       """Do not call constructor directly. Use Graph's insert_vertex(x)."""
@@ -172,100 +172,28 @@ class Graph:
     self._outgoing[u][v] = e
     self._incoming[v][u] = e
 
-  """def create_queue(self):
-      queue = AdaptableHeapPriorityQueue()
-      for i in range (self.vertices()):
-          queue.add(i, self.degree(i))
-      return queue
-
-  def function_min_user(self, queue):
-      while queue.__len__() != 0:
-          vertex, degree = queue.remove()
-          for k in range (len(self.list_vertex_selected)):
-              if not self.get_edge(vertex, self.list_vertex_selected[k]) == None:
-                  break
-              elif k == len(self.list_vertex_selected) - 1:
-                self.list_vertex_selected.append(vertex)
-          if len(self.list_vertex_selected) == 0:
-              self.list_vertex_selected.append(vertex)
-      return self.list_vertex_selected
-  """
-
   def calculate_max(self):
-      list = []
-      for i in (self.vertices()):
-          tuple = (self.degree(i), i)
-          list.append(tuple)
-      list.sort(key = lambda x : x[0])
-      return list
+      max = 0
+      for i in range (self.vertices()):
+          if(self.degree(i) > max) and not i._color and not i._signed:
+              max = self.degree(i)
+              v = i
+          else:
+              return None
+      return v
 
-  def function_min_user(self, vert):
-      while len(vert) != 0:
-          tuple = vert.pop()
-          x = tuple[1]
-          for k in range (len(self.list_vertex)):
-              if not self.get_edge(x, self.list_vertex[k]) == None:
-                  break
-              elif k == len(self.list_vertex) - 1:
-                self.list_vertex.append(x)
-          if len(self.list_vertex) == 0:
-              self.list_vertex.append(x)
-      return self.list_vertex
-
-#test
-g = Graph()
-vert = []
-for i in range(17):
-    vert.append(g.insert_vertex(i))
-
-g.insert_edge(vert[0],vert[1])
-g.insert_edge(vert[0],vert[2])
-g.insert_edge(vert[0],vert[5])
-g.insert_edge(vert[0],vert[3])
-
-g.insert_edge(vert[0],vert[4])
-g.insert_edge(vert[0],vert[6])
-g.insert_edge(vert[0],vert[7])
-g.insert_edge(vert[0],vert[8])
-g.insert_edge(vert[0],vert[9])
-g.insert_edge(vert[0],vert[10])
-g.insert_edge(vert[0],vert[11])
-g.insert_edge(vert[0],vert[12])
-g.insert_edge(vert[0],vert[13])
-g.insert_edge(vert[0],vert[14])
-g.insert_edge(vert[0],vert[15])
-g.insert_edge(vert[0],vert[16])
-
-g.insert_edge(vert[1],vert[13])
-g.insert_edge(vert[2],vert[4])
-g.insert_edge(vert[2],vert[3])
-g.insert_edge(vert[3],vert[12])
-g.insert_edge(vert[3],vert[9])
-g.insert_edge(vert[4],vert[6])
-g.insert_edge(vert[5],vert[8])
-g.insert_edge(vert[5],vert[7])
-g.insert_edge(vert[7],vert[14])
-g.insert_edge(vert[9],vert[10])
-g.insert_edge(vert[9],vert[11])
-g.insert_edge(vert[10],vert[15])
-
-g.insert_edge(vert[6],vert[2])
-g.insert_edge(vert[6],vert[10])
-g.insert_edge(vert[6],vert[11])
-g.insert_edge(vert[6],vert[15])
-
-g.insert_edge(vert[11],vert[7])
-g.insert_edge(vert[11],vert[14])
-g.insert_edge(vert[11],vert[10])
-g.insert_edge(vert[11],vert[3])
-g.insert_edge(vert[11],vert[15])
-
-list = g.calculate_max()
-s = g.function_min_user(list)
-for i in range(len(s)):
-    print(s[i])
-
-"""queue = g.create_queue()
-s = g.function_min_user(queue)
-for i in range(len(s)):
-    print(s[i])"""
+  def greedy(self):
+      vert = self.calculate_max()
+      if vert==None:
+          return print("END")
+      vert._signed = True
+      #appena inizio
+      if self.list_vertex == None:
+          vert._color = True
+          self.list_vertex.append(vert)
+      for k in len(self.list_vertex):
+          if self.get_edge(vert, self.list_vertex[k]) == None:
+                vert._color = True
+                self.list_vertex.append(vert)
+                break
+      self.greedy()
