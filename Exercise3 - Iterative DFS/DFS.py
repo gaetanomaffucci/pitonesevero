@@ -168,13 +168,14 @@ class Graph:
     self._outgoing[u][v] = e
     self._incoming[v][u] = e
 
-  def DFS_itarative(self, v):  # v is origin vertex of the algorithm DFS
-
+  # v is  vertex of the algorithm DFS
+  def DFS_itarative(self, v):
         v._visited = True
-        print(v._element)
+        print("Visit starts from node:"+str(v._element))
         # in this way the origin node isn't lost
         y = v
-        while True:
+        finish = 0
+        while finish < self.degree(v):
             count = 0
             for x in self.incident_edges(y, True):
                 count += 1
@@ -182,19 +183,20 @@ class Graph:
                 if not z._visited:
                     z._visited = True
                     z._prec = y
-                    print(z._element)
+                    print("Visiting node:"+str(z._element))
                     y = z
                     break
-                elif self.degree(y) == count:
-                    y = z._prec
-            if self.degree(y) == 0:
+                elif self.degree(y) == count and y != v:
+                    y = y._prec
+                    print("Return to previous node:"+str(y._element))
+                elif y._prec == v:
+                    finish +=1
+            if self.degree(y) == 0 or y._prec==None:
                 if y == v:
-                    return print("END")
+                    return print("END VISIT")
                 else:
                     y = z._prec
-            #else:
-                #return print("END")
-
+                    print("Return to previous node:"+str(y._element))
 
 #test
 g = Graph(True)
@@ -205,15 +207,19 @@ c = g.insert_vertex(2)
 d = g.insert_vertex(3)
 e = g.insert_vertex(4)
 f = g.insert_vertex(5)
+h = g.insert_vertex(6)
+m = g.insert_vertex(8)
 
 g.insert_edge(a, b)
 g.insert_edge(a, c)
 g.insert_edge(b, c)
-g.insert_edge(b, d)
 g.insert_edge(c, d)
 g.insert_edge(d, e)
 g.insert_edge(e, a)
 g.insert_edge(e, b)
 g.insert_edge(e, f)
+g.insert_edge(b, h)
+g.insert_edge(h, b)
+g.insert_edge(h, m)
 
-g.DFS_itarative(a)
+g.DFS_itarative(c)
