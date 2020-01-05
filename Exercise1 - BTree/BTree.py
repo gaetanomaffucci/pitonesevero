@@ -1,15 +1,18 @@
 from tree import Tree
-from bisect import *
+from bisect import bisect_left
+from math import ceil
 
 class BTree(Tree):
     #--------------------------------Node Class------------------------------------
     class _Node:
-        __slots__ = '_parent', '_keys_', '_children'
 
         def __init__(self, parent=None):
           self._parent = parent
           self._keys = []
           self._children = []
+
+        def __str__(self):
+            return str(self._parent)+str(self._keys)+str(self._children)
 
         # -------------------------- nested Position class --------------------------
 
@@ -25,6 +28,8 @@ class BTree(Tree):
             """Return True if other is a Position representing the same location."""
             return type(other) is type(self) and other._node is self._node
 
+        def __str__(self):
+            return str(self._container)+str(self._node)
         # ------------------------------- utility methods -------------------------------
 
     def _validate(self, p):
@@ -52,7 +57,7 @@ class BTree(Tree):
         return self._size
 
     def root(self):
-        """Return the root Position of the alberi (or None if tree is empty)."""
+        """Return the root Position of the tree(or None if tree is empty)."""
         return self._make_position(self._root)
 
     def parent(self, p):
@@ -67,7 +72,7 @@ class BTree(Tree):
          yield key
 
     def children(self, p):
-        """Return the Position of p's left child (or None if no left child)."""
+        """Return the Position of p's children (or None if has no  children)."""
         node = self._validate(p)
         for child in node._children:
             yield self._make_position(child)
@@ -77,50 +82,126 @@ class BTree(Tree):
         node = self._validate(p)
         return len(node._children)
 
-    def _isleaf(self, p):
-        """Return True if node is external, False if it's internal"""
+    def isleaf(self, p):
+        """Return True if node contained in Position is external, False if it's internal"""
         node = self._validate(p)
         return len(node._children)==0
 
-    def _isnodefull(self,p):
-        """Return True if the node is full, False otherwise"""
+    def _isfull(self,p):
+        """Return True if the node contained in Position is full, False otherwise"""
         node = self._validate(p)
         return len(node._keys) >= (2 * self._degree - 1)
 
-
     """Search for the position that contains the key"""
-    def search_from_position(self, key, p = None):
-        if p is None:
-            node = self.root()
-        else:
-            node = self._validate(p)
+    def search(self, key):
+        return self._search_from_position(key, self.root())
+
+    def _search_from_position(self, key, p):
+        node = self._validate(p)
+
 
         i = bisect_left(node._keys, key)
+
         if i!=len(node._keys) and node._keys[i] == key:
+
             return p
         elif self._isleaf(p):
             raise ValueError
         else:
-            self.search_from_position(self, node._children[i-1], key)
+            return self._search_from_position(key, self._make_position(node._children[i]))
 
-    def _search_insert_position(self, key, node=None):
+    """Search for the node which should contains the key"""
+    def _search_insert_node(self, key, node=None, flag=False):
         if node is None:
             node = self._root
         i = bisect_left(node._keys, key)
+
         if i!=len(node._keys) and node._keys[i] == key:
             raise ValueError('Key already present')
-        elif self._isleaf(self._make_position(node)):
-            return self._make_position(node),i
+        elif self.isleaf(self._make_position(node)):
+            return node,i
         else:
-            return self._search_insert_from_node(self, node.num_children(i-1), key)
+            return self._search_insert_node(key, node._children[i])
 
     def insert(self, key):
-        (p, i)=self._search_insert_position(key)
-        node = self._validate(p)
-        node._keys.insert(i, key)
+        if(self._root == None):
+            node = BTree._Node()
+            node._keys.append(key)
+            self._root = node
+        else:
+            (node, i)=self._search_insert_node(key)
+
+            node._keys.insert(i, key)
+            if self._isfull(self._make_position(node)):
+                self._split(node)
+
+    def _split(self, node):
+        middle = ceil(len(node._keys)/2) - 1
+        middle_key = node._keys[middle]
 
 
+
+        #special case, node is root of tree
+        if node._parent is None:
+            new_root = BTree._Node()
+
+            new_child = BTree._Node(new_root)
+            new_child._keys = node._keys[middle + 1:]
+            new_child._children = node._children[middle + 1:] # slice operator does not complain in case of empty children array
+
+            new_root._keys.append(middle_key)
+            new_root._children.append(node)
+            new_root._children.append(new_child)
+
+            del node._keys[middle:]
+            del node._children[middle+1:]
+            node._parent=new_root
+            self._root=new_root
+
+        else:
+
+            new_node = BTree._Node(node._parent)
+            new_node._keys = node._keys[middle + 1:]
+            new_node._children = node._children[middle + 1:]
+
+            del node._keys[middle:]
+            del node._children[middle + 1:]
+
+            parent_index=bisect_left(node._parent._keys,middle_key)
+
+            node._parent._keys.insert(parent_index,middle_key)
+            node._parent._children.insert(parent_index+1,new_node)
+
+            if self._isfull(self._make_position(node._parent)):
+                print("doppio split")
+                self._split(node._parent)
+
+
+    def _print_from_position(self, p):
+        node=self._validate(p)
+        print(node._keys)
+        if not self.isleaf(p):
+            for c in self.children(p):
+                self._print_from_position(c)
 
 if __name__=='__main__':
     b=BTree(2)
-    print(len(b))
+    for i in range (10,18):
+        b.insert(i)
+    """
+    start = BTree._Node()
+    start._keys = [12]
+    left= BTree._Node(start)
+    left._keys=[11]
+    right=BTree._Node(start)
+    right._keys=[13]
+    start._children.append(left)
+    start._children.append(right)
+    b._root=start
+
+    b.insert(14)
+    b.insert(15)
+    b.insert(9)
+    b.insert(10)
+    """
+    b._print_from_position(b.root())
