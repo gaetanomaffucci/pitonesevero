@@ -90,7 +90,7 @@ class BTree(Tree):
     def _isfull(self,p):
         """Return True if the node contained in Position is full, False otherwise"""
         node = self._validate(p)
-        return len(node._keys) >= (2 * self._degree - 1)
+        return len(node._keys) > (2 * self._degree - 1)
 
     """Search for the position that contains the key"""
     def search(self, key):

@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fd1a0565-edae-4dc9-896a-85e8b526dc1b" name="Default Changelist" comment="Caricamento file di progetto">
+    <list default="true" id="fd1a0565-edae-4dc9-896a-85e8b526dc1b" name="Default Changelist" comment="Cambio Behavior attributo leaf">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/pitonesevero.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pitonesevero.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Exercise1 - BTree/B-Tree.py" beforeDir="false" afterPath="$PROJECT_DIR$/Exercise1 - BTree/B-Tree.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Exercise1 - BTree/BTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/Exercise1 - BTree/BTree.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="ProjectId" id="1VhLZJmLG3zDbPvUQO8w04rqBom" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -25,22 +33,24 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Exercise1 - BTree" />
+    <property name="settings.editor.selected.configurable" value="PyConsoleConfigurable.Python Console" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="pitonesevero" is-module-sdk="true" working-directory="$PROJECT_DIR$/Exercise1 - BTree">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="pitonesevero" />
+        <option name="myWorkingDirectory" value="$PROJECT_DIR$/Exercise1 - BTree" />
+      </console-settings>
     </option>
   </component>
-  <component name="RunManager" selected="Python.B-Tree">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Andrea\IdeaProjects\AADS-Project\Exercise1 - BTree" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.BTree">
     <configuration name="B-Tree" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="pitonesevero" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -54,6 +64,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Exercise1 - BTree/B-Tree.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="BTree" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pitonesevero" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Exercise1 - BTree" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Exercise1 - BTree/BTree.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -85,10 +116,23 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.BTree" />
         <item itemvalue="Python.B-Tree" />
         <item itemvalue="Python.DFS" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -101,6 +145,35 @@
       <option name="presentableId" value="Default" />
       <updated>1577700433119</updated>
     </task>
+    <task id="LOCAL-00001" summary="Cambio Behavior attributo leaf">
+      <created>1578150774105</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1578150774105</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Tentativo di Split">
+      <created>1578158125898</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1578158125898</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Cambio Behavior attributo leaf">
+      <created>1578160830534</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1578160830534</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Implementazione basata su ADT Position">
+      <created>1578178056198</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1578178056198</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -108,7 +181,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -116,20 +191,73 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Caricamento file di progetto" />
-    <option name="LAST_COMMIT_MESSAGE" value="Caricamento file di progetto" />
+    <MESSAGE value="Tentativo di Split" />
+    <MESSAGE value="Cambio Behavior attributo leaf" />
+    <MESSAGE value="Implementazione basata su ADT Position" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementazione basata su ADT Position" />
   </component>
   <component name="WindowStateProjectService">
     <state x="230" y="60" key="#Notifications" timestamp="1577701613518">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
     <state x="230" y="60" key="#Notifications/0.23.1280.777@0.23.1280.777" timestamp="1577701613518" />
-    <state x="131" y="33" key="SettingsEditor" timestamp="1577701678573">
-      <screen x="0" y="23" width="1280" height="777" />
+    <state x="399" y="0" key="#tree" timestamp="1578161297816">
+      <screen x="0" y="0" width="1360" height="728" />
     </state>
+    <state x="399" y="0" key="#tree/0.0.1360.728@0.0.1360.728" timestamp="1578161297816" />
+    <state x="334" y="0" key="CommitChangelistDialog2" timestamp="1578247352017">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="334" y="0" key="CommitChangelistDialog2/0.0.1360.728@0.0.1360.728" timestamp="1578247352017" />
+    <state x="460" y="120" key="FileChooserDialogImpl" timestamp="1578233718295">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="460" y="120" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1578233718295" />
+    <state width="1339" height="179" key="GridCell.Tab.0.bottom" timestamp="1578247464797">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="179" key="GridCell.Tab.0.bottom/0.0.1360.728@0.0.1360.728" timestamp="1578247464797" />
+    <state width="1339" height="179" key="GridCell.Tab.0.center" timestamp="1578247464797">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="179" key="GridCell.Tab.0.center/0.0.1360.728@0.0.1360.728" timestamp="1578247464797" />
+    <state width="1339" height="179" key="GridCell.Tab.0.left" timestamp="1578247464797">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="179" key="GridCell.Tab.0.left/0.0.1360.728@0.0.1360.728" timestamp="1578247464797" />
+    <state width="1339" height="179" key="GridCell.Tab.0.right" timestamp="1578247464797">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="179" key="GridCell.Tab.0.right/0.0.1360.728@0.0.1360.728" timestamp="1578247464797" />
+    <state width="1339" height="223" key="GridCell.Tab.1.bottom" timestamp="1578236322465">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="223" key="GridCell.Tab.1.bottom/0.0.1360.728@0.0.1360.728" timestamp="1578236322465" />
+    <state width="1339" height="223" key="GridCell.Tab.1.center" timestamp="1578236322465">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="223" key="GridCell.Tab.1.center/0.0.1360.728@0.0.1360.728" timestamp="1578236322465" />
+    <state width="1339" height="223" key="GridCell.Tab.1.left" timestamp="1578236322465">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="223" key="GridCell.Tab.1.left/0.0.1360.728@0.0.1360.728" timestamp="1578236322465" />
+    <state width="1339" height="223" key="GridCell.Tab.1.right" timestamp="1578236322465">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="1339" height="223" key="GridCell.Tab.1.right/0.0.1360.728@0.0.1360.728" timestamp="1578236322465" />
+    <state x="139" y="9" key="SettingsEditor" timestamp="1578233720368">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="139" y="9" key="SettingsEditor/0.0.1360.728@0.0.1360.728" timestamp="1578233720368" />
     <state x="131" y="33" key="SettingsEditor/0.23.1280.777@0.23.1280.777" timestamp="1577701678573" />
-    <state x="307" y="365" key="com.intellij.ide.util.TipDialog" timestamp="1578042587096">
-      <screen x="0" y="23" width="1280" height="777" />
+    <state x="272" y="98" key="Vcs.Push.Dialog.v2" timestamp="1578247360391">
+      <screen x="0" y="0" width="1360" height="728" />
     </state>
+    <state x="272" y="98" key="Vcs.Push.Dialog.v2/0.0.1360.728@0.0.1360.728" timestamp="1578247360391" />
+    <state x="326" y="320" key="com.intellij.ide.util.TipDialog" timestamp="1578228186450">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="326" y="320" key="com.intellij.ide.util.TipDialog/0.0.1360.728@0.0.1360.728" timestamp="1578228186450" />
     <state x="307" y="365" key="com.intellij.ide.util.TipDialog/0.23.1280.777@0.23.1280.777" timestamp="1578042587096" />
     <state x="288" y="30" width="683" height="729" key="find.popup" timestamp="1577700875852">
       <screen x="0" y="23" width="1280" height="777" />

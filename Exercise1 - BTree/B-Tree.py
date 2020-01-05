@@ -1,105 +1,5 @@
 from math import ceil
 
-class BTreeNode(object):
-    """A B-Tree Node.
-
-    attributes
-    =====================
-    leaf : boolean, determines whether this node is a leaf
-    _keys : list, a list of keys internal to this node
-    _c : list, a list of children of this node
-    """
-    def __init__(self, t):
-        self.t = t                       #order of node
-        self._keys = []                  #keys are keys[m-1]
-        self._c = []                     #c
-        self.parent = None
-    #TODO change behavior of leaf
-
-    def isleaf(self):
-        if len(self._c) == 0:
-            return True
-        else:
-            return False
-
-    def insert_key(self, key):
-        self._keys.append(key)
-        self._keys.sort()
-
-    def insert_keys(self, keys):
-        self._keys.extend(keys)
-        self._keys.sort()
-
-    def isfull(self):
-        if len(self._keys) > (2 * self.t - 1):
-            return True
-        else:
-            return False
-
-
-
-
-class BTree(object):
-    def __init__(self, t):
-        self.root = BTreeNode(t)
-        # t is the minimum number of child that a node may have
-        self.t = t
-
-    """def insert(self, k):
-        r = self.root
-        if len(r.keys) == (2*self.t) - 1:     # keys are full, so we must split
-            s = BTreeNode()
-            self.root = s
-            s.c.insert(0, r)                  # former root is now 0th child of new root s
-            self._split_child(s, 0)
-            self._insert_nonfull(s, k)
-        else:
-            self._insert_nonfull(r, k)
-
-    def _insert_nonfull(self, x, k):
-        i = len(x.keys) - 1     # i is the number of node's keys x subtracted of 1 because index go from 0
-        if x.leaf:
-            # if k isn't greater of those present (if it were, the while loop would not be run)
-            # then it is need to see in which position of list "keys" insert k
-            x.keys.append(0)
-            while i >= 0 and k < x.keys[i]:
-                x.keys[i+1] = x.keys[i]
-                i -= 1
-            # add key in the position i+1 of list "keys"
-            x.keys[i+1] = k
-        else:
-            # insert a child
-            while i >= 0 and k < x.keys[i]:
-                i -= 1
-            i += 1
-            if len(x.c[i].keys) == (2*self.t) - 1:
-                self._split_child(x, i)
-                if k > x.keys[i]:
-                    i += 1
-            self._insert_nonfull(x.c[i], k)
-
-    def _split_child(self, x, i):
-        t = self.t
-        y = x.c[i]
-        z = BTreeNode(leaf=y.leaf)
-
-        # slide all children of x to the right and insert z at i+1.
-        x.c.insert(i+1, z)
-        x.keys.insert(i, y.keys[t-1])
-
-        # keys of z are t to 2t - 1,
-        # y is then 0 to t-2
-        z.keys = y.keys[t:(2*t - 1)]
-        y.keys = y.keys[0:(t-1)]
-
-        # children of z are t to 2t els of y.c
-        if not y.leaf:
-            z.c = y.c[t:(2*t)]
-            y.c = y.c[0:(t-1)]
-    """
-
-
-
     def split(self, x):
         i = ceil(len(x._keys)/2) - 1
 
@@ -166,78 +66,6 @@ class BTree(object):
 
             if x.parent.isfull():
                 self.split(x.parent)
-
-        """if x.parent != None:
-            self.insert_key(key, x)
-            i = ceil(len(x.keys)/2) - 1
-            z = BTreeNode(leaf=True)
-            temp = x.keys[i]
-            z.keys = x.keys[(i+1):len(x.keys)]
-            x.keys = x.keys[0:i]
-            x.parent.c.append(z)
-            z.parent = x.parent
-            x.parent.leaf = False
-            x.parent.keys.append(temp)
-        else:
-            self.insert_key(key, x)
-            y = BTreeNode(leaf=True)
-            i = ceil(len(x.keys)/2) - 1
-            y.keys = x.keys[0:i]
-            y.parent = x
-            z = BTreeNode(leaf=True)
-            z.keys = x.keys[(i+1):len(x.keys)]
-            z.parent = x
-            temp = x.keys[i]
-            x.keys.clear()
-            x.keys.append(temp)
-            x.c.append(y)
-            x.c.append(z)
-            x.leaf = False
-        """
-
-
-    def insert(self, key):
-        x = self.search_node_to_insert(self.root, key)
-        # if node x isn't full
-        x.insert_key(key)
-        if x.isfull():
-            self.split(x)
-
-
-
-    #return the node where the key should be inserted
-    def search_node_to_insert(self, x, key):
-        if x.isleaf():
-            return x
-        else:
-            for i in range(0, len(x._keys)):
-                if key < x._keys[i]:
-                    return self.search_node_to_insert(x._c[i], key)
-                    break
-            return self.search_node_to_insert(x._c[i + 1], key)
-
-    def search(self, k, x):
-        """Search the B-Tree for the key k.
-
-        args
-        =====================
-        k : Key to search for
-        x : (optional) Node at which to begin search. Can be None, in which case the entire tree is searched.
-
-        """
-        if isinstance(x, BTreeNode):
-            i = 0
-            while i < len(x._keys) and k > x._keys[i]:    # look for index of k
-                i += 1
-            if i < len(x._keys) and k == x._keys[i]:      # found exact match
-                return x, i
-            elif x.isleaf():                                # no match in keys, and is leaf ==> no match exists
-                return None
-            else:                                       # search children
-                x._c[i].parent = x
-                return self.search(k, x._c[i])
-        else:                                           # no node provided, search root of tree
-            return self.search(k, self.root)
 
     def delete(self, element):
 
@@ -308,13 +136,6 @@ class BTree(object):
         x.keys.append(temp)
         x.keys.remove(element)
         x.keys.sort()
-
-    def print_node(self, x):
-        #print("Level"+str(n)+":")
-        print(x._keys)
-        if not x.isleaf():
-            for i in range (0, len(x._keys) + 1):
-                self.print_node(x._c[i])
 
 
 
