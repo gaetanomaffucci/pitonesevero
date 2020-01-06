@@ -256,36 +256,24 @@ class BTree(Tree):
         right_node = parent._children[right_node_index]
 
         if len(left_node._keys) > len(right_node._keys):
-            last_child = left_node._children[-1]
+
             last_element = left_node._keys[-1]
-
             right_node._keys.insert(0, parent._keys[left_node_index])
-            last_child._parent = right_node
-            right_node._children.insert(0, last_child)
-
             parent._keys[left_node_index] = last_element
-
             del left_node._keys[-1]
-            del left_node._children[-1]
+
         else:
-            first_child = right_node._children[0]
             first_element = right_node._keys[0]
-
             left_node._keys.append(parent._keys[left_node_index])
-            first_child._parent = left_node
-            left_node._children.append(first_child)
-
             parent._keys[left_node_index] = first_element
-
             del right_node._keys[0]
-            del right_node._children[0]
 
     # ---------------------------------------- delete methods ------------------------------------------------
 
     def delete(self, key):
 
         #Search the node where the key is (if present)
-        (position, index) = self._search_from_position(key,self.root())
+        (position, index) = self._search_from_position(key, self.root())
 
         node = self._validate(position)
 
@@ -303,7 +291,6 @@ class BTree(Tree):
 
             #now we proceed with delete in the sibling or descendant of sibling
             node=predecessor
-            index=len(node._keys)-1
 
 
         node._keys.remove(key)
@@ -318,12 +305,12 @@ class BTree(Tree):
 
 
 if __name__=='__main__':
-    b=BTree(3)
-    for i in range (1,24):
+    b=BTree(4)
+    for i in range (1,25):
             b.insert(i)
-    b.delete(23)
-    b.delete(17)
-    b.delete(11)
+
+    b.delete(20)
+    b.delete(4)
     b.print_from_position(b.root())
 
 
