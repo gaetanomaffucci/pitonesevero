@@ -1,9 +1,10 @@
 from tree import Tree
 from bisect import bisect_left
 from math import ceil
+import logging
 
 class BTree(Tree):
-    #--------------------------------Node Class------------------------------------
+    # --------------------------------Node Class------------------------------------
     class _Node:
 
         def __init__(self, parent=None):
@@ -12,7 +13,7 @@ class BTree(Tree):
           self._children = []
 
         def __str__(self):
-            return str(self._parent)+str(self._keys)+str(self._children)
+            return str(self._keys)
 
         # -------------------------- nested Position class --------------------------
 
@@ -30,7 +31,7 @@ class BTree(Tree):
 
         def __str__(self):
             return str(self._container)+str(self._node)
-        # ------------------------------- utility methods -------------------------------
+    # ------------------------------- methods -------------------------------
 
     def _validate(self, p):
         """Return associated node, if position is valid."""
@@ -87,15 +88,17 @@ class BTree(Tree):
         node = self._validate(p)
         return len(node._children)==0
 
-    def _isfull(self,p):
+    def _isfull(self, p):
         """Return True if the node contained in Position is full, False otherwise"""
         node = self._validate(p)
         return len(node._keys) > (2 * self._degree - 1)
 
+    # ---------------------------------------- search methods -----------------------------------------------------
     """Search for the position that contains the key"""
     def search(self, key):
-        return self._search_from_position(key, self.root())
+        return self._search_from_position(key, self.root())[0]
 
+    """Private method for search a key. Return a tuple with the position and the insertion index"""
     def _search_from_position(self, key, p):
         node = self._validate(p)
 
@@ -103,15 +106,14 @@ class BTree(Tree):
         i = bisect_left(node._keys, key)
 
         if i!=len(node._keys) and node._keys[i] == key:
-
-            return p
-        elif self._isleaf(p):
+            return (p,i)
+        elif self.isleaf(p):
             raise ValueError
         else:
             return self._search_from_position(key, self._make_position(node._children[i]))
 
     """Search for the node which should contains the key"""
-    def _search_insert_node(self, key, node=None, flag=False):
+    def _search_insert_node(self, key, node=None):
         if node is None:
             node = self._root
         i = bisect_left(node._keys, key)
@@ -123,6 +125,9 @@ class BTree(Tree):
         else:
             return self._search_insert_node(key, node._children[i])
 
+    # ---------------------------------------- insert method -----------------------------------------------------
+
+    """Insert the key in the tree if not already present, otherwise raise a ValueError"""
     def insert(self, key):
         if(self._root == None):
             node = BTree._Node()
@@ -134,6 +139,7 @@ class BTree(Tree):
             node._keys.insert(i, key)
             if self._isfull(self._make_position(node)):
                 self._split(node)
+        self._size += 1
 
     def _split(self, node):
         middle = ceil(len(node._keys)/2) - 1
@@ -149,59 +155,107 @@ class BTree(Tree):
             new_child._keys = node._keys[middle + 1:]
             new_child._children = node._children[middle + 1:] # slice operator does not complain in case of empty children array
 
+            for c in new_child._children:
+                c._parent=new_child
+
             new_root._keys.append(middle_key)
             new_root._children.append(node)
             new_root._children.append(new_child)
 
             del node._keys[middle:]
-            del node._children[middle+1:]
-            node._parent=new_root
-            self._root=new_root
+            del node._children[middle + 1:]
+            node._parent = new_root
+            self._root = new_root
 
         else:
+            parent_node=node._parent
 
-            new_node = BTree._Node(node._parent)
+            new_node = BTree._Node(parent_node)
             new_node._keys = node._keys[middle + 1:]
             new_node._children = node._children[middle + 1:]
+
+            for c in new_node._children:
+                c._parent = new_node
 
             del node._keys[middle:]
             del node._children[middle + 1:]
 
-            parent_index=bisect_left(node._parent._keys,middle_key)
+            parent_index=bisect_left(parent_node._keys,middle_key)
 
-            node._parent._keys.insert(parent_index,middle_key)
-            node._parent._children.insert(parent_index+1,new_node)
+            parent_node._keys.insert(parent_index,middle_key)
+            parent_node._children.insert(parent_index+1,new_node)
 
             if self._isfull(self._make_position(node._parent)):
-                print("doppio split")
                 self._split(node._parent)
 
-
-    def _print_from_position(self, p):
+    """Utility function for print the tree (Warning: the result may not be very readable)"""
+    def print_from_position(self, p):
         node=self._validate(p)
         print(node._keys)
         if not self.isleaf(p):
             for c in self.children(p):
-                self._print_from_position(c)
+                self.print_from_position(c)
+
+    # ---------------------------------------- delete method -----------------------------------------------------
+    def delete(self, key):
+
+        #Search the node where the key is (if present)
+        (position, index) = self._search_from_position(key,self.root())
+
+        node = self._validate(position)
+
+        # CASE 1: node "x" is not leaf search predecessor of element
+        if not self.isleaf(position):
+            # utility methods takes as parameters the position and position "i"
+            pred = self.predecessor(x, i)
+            # in the position "i" of element in the node "x", we take the predecessor found
+            x.keys.insert(i, pred)
+            self.delete(pred)
+
+        # CASE 2: node "x" is leaf
+        else:
+            # CASE 2.1: the leaf contains >t-1 keys ---> can delete the element from node "x"
+            if len(node._keys) > self.t - 1:
+                node._keys.remove(key)
+            # CASE 2.2: the leaf contains t-1 keys ---> in this case there are others two cases
+            elif len(x.keys) == self.t - 1:
+                # need to found index "j" that indicates the position of list c of node parent
+                for j in range(0, len(x.parent.keys) + 1):
+                    if x.parent.c[j].keys[0] == x.keys[0]:
+                        if j != 0:
+                            k = j - 1
+                        else:
+                            k = j + 1
+                        break
+                # CASE 2.2.1: redistribute the keys with adjacent sibling
+                # adjacent sibling is to left
+                if len(x.parent.c[k].keys) > self.t - 1 and k == j - 1:
+                    j = k
+                    index = len(x.parent.c[k].keys) - 1
+                    self.redistribution(element, k, j, index, x)
+                # adjacent sibling is to right
+                elif len(x.parent.c[k].keys) > self.t - 1 and k == j + 1:
+                    index = 0
+                    self.redistribution(element, k, j, index, x)
+                # CASE 2.2.2: fusion with adjacent sibling
+                # adjacent sibling is to left
+                elif len(x.parent.c[k].keys) == self.t - 1 and k == j - 1:
+                    self.fusion(element, x, k, j)
+                # adjacent sibling is to right
+                elif len(x.parent.c[k].keys) == self.t - 1 and k == j + 1:
+                    self.fusion(element, x, j, k)
+
 
 if __name__=='__main__':
-    b=BTree(2)
-    for i in range (10,18):
-        b.insert(i)
-    """
-    start = BTree._Node()
-    start._keys = [12]
-    left= BTree._Node(start)
-    left._keys=[11]
-    right=BTree._Node(start)
-    right._keys=[13]
-    start._children.append(left)
-    start._children.append(right)
-    b._root=start
+    b=BTree(6)
+    for i in range (1,1000,5):
+            b.insert(i)
 
-    b.insert(14)
-    b.insert(15)
-    b.insert(9)
-    b.insert(10)
-    """
-    b._print_from_position(b.root())
+    print(b.search(96))
+    #b.print_from_position(b.root())
+
+
+
+
+
+
