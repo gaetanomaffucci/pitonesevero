@@ -93,6 +93,9 @@ class BTree(Tree):
         node = self._validate(p)
         return len(node._keys) > (2 * self._degree - 1)
 
+    def getdegree(self):
+        return self._t
+
     # ---------------------------------------- search methods -----------------------------------------------------
     """Search for the position that contains the key"""
     def search(self, key):
@@ -153,7 +156,8 @@ class BTree(Tree):
 
             new_child = BTree._Node(new_root)
             new_child._keys = node._keys[middle + 1:]
-            new_child._children = node._children[middle + 1:] # slice operator does not complain in case of empty children array
+            new_child._children = node._children[middle + 1:]
+            # slice operator does not complain in case of empty children array
 
             for c in new_child._children:
                 c._parent=new_child
@@ -196,7 +200,88 @@ class BTree(Tree):
             for c in self.children(p):
                 self.print_from_position(c)
 
-    # ---------------------------------------- delete method -----------------------------------------------------
+    # ---------------------------------------- delete utility methods ----------------------------------------
+    """"Utility method for find the previous key in left sibling or its descendants"""
+    def predecessor(self, node, index):
+        if self.isleaf(self._make_position(node._children[index])):
+            return node._children[index]
+        else:
+            j = len(node._children[index]._keys)
+            return self.predecessor(node._children[index], j)
+
+    def fusion(self, parent, left_node_index, right_node_index):
+        left_node = parent._children[left_node_index]
+        right_node = parent._children[right_node_index]
+
+        left_node._keys.append(parent._keys[left_node_index])
+        del parent._keys[left_node_index]
+
+        left_node._keys.extend(right_node._keys)
+        del parent._children[right_node_index]
+
+    def undersize(self, node):
+        if node._parent is not None:
+
+            # need to find index of this node inside parent's children array
+            last_key = node._keys[-1]
+
+            parent_node = node._parent
+            parent_keys = parent_node._keys
+            node_index = bisect_left(parent_keys, last_key)
+
+            # CASE 2.2.1: redistribute the keys with adjacent sibling
+            # adjacent sibling is to left
+            if node_index > 0:
+                other_node=parent_node._children[node_index-1]
+                if len(other_node._keys) > self._degree - 1:
+                    self.redistribution(parent_node, node_index-1, node_index)
+                else:
+                    self.fusion(parent_node, node_index-1, node_index)
+                if len(parent_keys) < self._degree - 1:
+                    self.undersize(parent_node)
+
+            #The node is the first, check for redistribution or fusion between node 0 and 1
+            elif len(parent_node._children[1]._keys) > self._degree - 1:
+                    self.redistribution(parent_node, 0, 1)
+            else:
+                    self.fusion(parent_node,0,1)
+
+
+        #children of root have been fused together as we have checked before we have elements left in the tree
+        elif len(node._keys) == 0:
+            self._root = node._children[0]
+
+    def redistribution(self, parent, left_node_index, right_node_index):
+        left_node = parent._children[left_node_index]
+        right_node = parent._children[right_node_index]
+
+        if len(left_node._keys) > len(right_node._keys):
+            last_child = left_node._children[-1]
+            last_element = left_node._keys[-1]
+
+            right_node._keys.insert(0, parent._keys[left_node_index])
+            last_child._parent = right_node
+            right_node._children.insert(0, last_child)
+
+            parent._keys[left_node_index] = last_element
+
+            del left_node._keys[-1]
+            del left_node._children[-1]
+        else:
+            first_child = right_node._children[0]
+            first_element = right_node._keys[0]
+
+            left_node._keys.append(parent._keys[left_node_index])
+            first_child._parent = left_node
+            left_node._children.append(first_child)
+
+            parent._keys[left_node_index] = first_element
+
+            del right_node._keys[0]
+            del right_node._children[0]
+
+    # ---------------------------------------- delete methods ------------------------------------------------
+
     def delete(self, key):
 
         #Search the node where the key is (if present)
@@ -204,55 +289,43 @@ class BTree(Tree):
 
         node = self._validate(position)
 
-        # CASE 1: node "x" is not leaf search predecessor of element
+        # If node is not leaf, swap with the previous element then delete from the leaf
         if not self.isleaf(position):
-            # utility methods takes as parameters the position and position "i"
-            pred = self.predecessor(x, i)
-            # in the position "i" of element in the node "x", we take the predecessor found
-            x.keys.insert(i, pred)
-            self.delete(pred)
 
-        # CASE 2: node "x" is leaf
-        else:
-            # CASE 2.1: the leaf contains >t-1 keys ---> can delete the element from node "x"
-            if len(node._keys) > self.t - 1:
-                node._keys.remove(key)
-            # CASE 2.2: the leaf contains t-1 keys ---> in this case there are others two cases
-            elif len(x.keys) == self.t - 1:
-                # need to found index "j" that indicates the position of list c of node parent
-                for j in range(0, len(x.parent.keys) + 1):
-                    if x.parent.c[j].keys[0] == x.keys[0]:
-                        if j != 0:
-                            k = j - 1
-                        else:
-                            k = j + 1
-                        break
-                # CASE 2.2.1: redistribute the keys with adjacent sibling
-                # adjacent sibling is to left
-                if len(x.parent.c[k].keys) > self.t - 1 and k == j - 1:
-                    j = k
-                    index = len(x.parent.c[k].keys) - 1
-                    self.redistribution(element, k, j, index, x)
-                # adjacent sibling is to right
-                elif len(x.parent.c[k].keys) > self.t - 1 and k == j + 1:
-                    index = 0
-                    self.redistribution(element, k, j, index, x)
-                # CASE 2.2.2: fusion with adjacent sibling
-                # adjacent sibling is to left
-                elif len(x.parent.c[k].keys) == self.t - 1 and k == j - 1:
-                    self.fusion(element, x, k, j)
-                # adjacent sibling is to right
-                elif len(x.parent.c[k].keys) == self.t - 1 and k == j + 1:
-                    self.fusion(element, x, j, k)
+            temp = node._keys[index]
+
+            # we find the previous key in the left sibling or one of its descendants
+            predecessor = self.predecessor(node, index)
+
+            #swap key and predecessor
+            node._keys[index]=predecessor._keys[-1]
+            predecessor._keys[-1]=temp
+
+            #now we proceed with delete in the sibling or descendant of sibling
+            node=predecessor
+            index=len(node._keys)-1
+
+
+        node._keys.remove(key)
+        self._size -= 1
+
+        # the leaf contains less than t-1 keys
+        if len(node._keys) < self._degree - 1 and self._size > 0:
+            self.undersize(node)
+        elif self._size == 0:
+            self._root = None
+
 
 
 if __name__=='__main__':
-    b=BTree(6)
-    for i in range (1,1000,5):
+    b=BTree(3)
+    for i in range (1,24):
             b.insert(i)
+    b.delete(23)
+    b.delete(17)
+    b.delete(11)
+    b.print_from_position(b.root())
 
-    print(b.search(96))
-    #b.print_from_position(b.root())
 
 
 
